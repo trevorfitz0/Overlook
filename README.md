@@ -1,10 +1,11 @@
 Overlook
 Abstract:
 
-    This in an interactive web-based application with two different User modes, Admin and Customer. The customer site allows users to view all 
-    future and past bookings, create new and remove bookings and view info about their created bookings! The Admin center allows the 
-    hotel manager to view all customers that have ever created a booking, create/ remove bookings for any certain customer and view daily 
-    stats for the hotel.
+    This in an interactive web-based application with two different User modes, Admin and Customer. 
+    The customer site allows users to view all future and past bookings, create new and remove bookings 
+    and view info about their created bookings! The Admin center allows the hotel manager to view all 
+    customers that have ever created a booking, create/ remove bookings for any certain customer and 
+    view daily stats for the hotel.
 
 Installation Instructions:
 
@@ -22,8 +23,8 @@ Preview of App:
 demo
 Context:
 
-    I completed this project in the 11th week of the Turing front end software engineering program, the project took roughly a week to create and 
-    I am excited to share it!
+    I completed this project in the 11th week of the Turing front end software engineering program, 
+    the project took roughly a week to create and I am excited to share it!
 
 Contributors:
 
@@ -60,7 +61,8 @@ Wins + Challenges:
 Wins
 
     • I was able to quickly setup my Fetch functions and grab all the required data from an external server. 
-    • I used Session Storage in combination with Fetch protocols to ensure refresh of the page does not effect the current user state. 
+    • I used Session Storage in combination with Fetch protocols to ensure refresh of 
+        the page does not effect the current user state. 
     • I really challenged myself with html and css here, this is the best looking website I have created so far. 
 
 Challenges:
