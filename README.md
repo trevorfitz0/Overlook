@@ -1,9 +1,10 @@
 Overlook
 Abstract:
 
-This in an interactive web-based application with two different User modes, Admin and Customer. The customer site allows users to view all future and past bookings, create new and remove bookings and view info about their created bookings! The Admin center allows the hotel manager to view all customers that have ever created a booking, create/ remove bookings for any certain customer and view daily stats for the hotel.
+    This in an interactive web-based application with two different User modes, Admin and Customer. The customer site allows users to view all future and       past bookings, create new and remove bookings and view info about their created bookings! The Admin center allows the hotel manager to view all             customers that have ever created a booking, create/ remove bookings for any certain customer and view daily stats for the hotel.
 
 I used both Fetch and Session Storage in this project, these were my two largest wins!
+
 Installation Instructions:
 
     Open terminal and navigate where you would like to store the application.
