@@ -1,6 +1,7 @@
 import './css/styles.css';
 import './images/turing-logo.png'
 import HotelData from './classes/hotelData.js'
+import Booking from './classes/booking.js'
 
 //Fetch my data!
 fetchData()
@@ -34,14 +35,11 @@ var isAdmin = JSON.parse(sessionStorage.getItem('isAdmin')) || false
 var loggedIn = JSON.parse(sessionStorage.getItem('loggedIn')) || false
 var hotelData
 var currentUser = 50
-var currentMonth
-var currentDay
-var currentYear
-var roomType
-var roomNum
 var roomsBooked
 var userID
 var currentEvent
+
+var booking
 
 //Current Date
 
@@ -289,7 +287,7 @@ function dailyStats() {
     acc += hotelData.rooms[room.roomNumber].costPerNight
     return acc
   }, 0)
-  statMain.innerHTML += `
+  statMain.innerHTML = `
   <h1>Rooms booked today: </h1> 
   <h2> ${roomsBooked.length}</h2>
   <h1>Rooms available today: </h1> 
@@ -307,11 +305,11 @@ function customerData() {
   statMain.innerHTML = `
   <h1 id="stat-title">Search for a customer here!</h1>
   <label id="label" for="search">Enter Customer's name</label>
-  <input id="search" id="search-customer" 
+  <input id="search" class="search-customer" 
   placeholder="Enter Username" required>  
   `
 
-  var search = document.querySelector('#search-customer')
+  var search = document.querySelector('.search-customer')
   search.addEventListener("input", (event) => {
     var searchValue = event.target.value.toLowerCase();
     updateResult(searchValue);
@@ -400,6 +398,7 @@ function bookHotel() {
   dataArea.innerHTML = ''
   statMain.innerHTML = `
   <h1 id="stat-title">First, choose a month!</h2>`
+  booking = new Booking(hotelData)
   genCalender()
 }
 
@@ -428,11 +427,11 @@ function genCalender() {
 }
 
 function chooseDay(Event) {
-  currentMonth = Event.target.value
+  booking.currentMonth = Event.target.value
   statMain.innerHTML = ''
   statMain.innerHTML = `
   <h1 id="stat-title">Now, let's choose a day!</h2>`
-  const daysInMonth = getDays(2021, currentMonth);
+  const daysInMonth = getDays(2021, booking.currentMonth)
   for (var i = 1; i < daysInMonth + 1; i++) {
     statMain.innerHTML += 
     `
@@ -446,7 +445,7 @@ function chooseDay(Event) {
 }
 
 function chooseYear(Event) {
-  currentDay = Event.target.innerText
+  booking.currentDay = Event.target.innerText
   statMain.innerHTML = ''
   for (var i = 2019; i < 2037; i++) {
     statMain.innerHTML += 
@@ -461,11 +460,11 @@ function chooseYear(Event) {
 }
 
 function typeOfRoom(Event) {
-  currentYear = Event.target.innerText
+  booking.currentYear = Event.target.innerText
   statMain.innerHTML = `
   <h1 id="stat-title" class="room-type">Choose Type of Room</h1>
   `
-  var roomArray = hotelData.rooms.reduce((acc, room) => {
+  hotelData.rooms.reduce((acc, room) => {
     if (!acc.includes(room.roomType)) {
       statMain.innerHTML +=
       `
@@ -483,38 +482,30 @@ function typeOfRoom(Event) {
 }
 
 function roomsAvailable(Event) {
-  roomType = Event.target.innerText.toLowerCase()
-  if (currentDay < 10) {
-    currentDay = 0 + currentDay 
-  }
-  if (currentMonth < 10) {
-    currentMonth = 0 + currentMonth 
-  }
-  date = `${currentYear}/${currentMonth}/${currentDay}`
+  booking.roomType = Event.target.innerText.toLowerCase()
+  booking.addZeros()
+  booking.setDate()
   statMain.innerHTML = `
-  <h1 id="stat-title">Available rooms on ${date}</h1>
+  <h1 id="stat-title">Available rooms on ${booking.date}</h1>
   `
-  var sameRoomType = hotelData.rooms
-    .filter(room => room.roomType === roomType.toLowerCase())
+  var sameRoomType = booking.filterRoomType()
 
-  var takenThatDay = hotelData.rooms.reduce((acc, room) => {
-    hotelData.bookings.forEach(booking => {
-      if (booking.date === date && booking.roomNumber === room.number) {
-        acc.push(booking.roomNumber)
+  var takenThatDay = booking.takenThatDay()
+  if (takenThatDay.length === 25) {
+    statMain.innerHTML = `
+    <h1 id="stat-title">No available rooms</h1>
+    `
+  } else {
+    sameRoomType.forEach(room => {
+      if (!takenThatDay.includes(room.number)) {
+        statMain.innerHTML +=
+        `
+        <button value="${room.number}" class="available-room-button">
+        ${room.number}</button>
+        `
       }
     })
-    return acc
-  }, [])
-
-  sameRoomType.forEach(room => {
-    if (!takenThatDay.includes(room.number)) {
-      statMain.innerHTML +=
-      `
-      <button value="${room.number}" class="available-room-button">
-      ${room.number}</button>
-      `
-    }
-  })
+  }
   var roomButtons = document.querySelectorAll('.available-room-button')
 
   roomButtons.forEach(button => {
@@ -523,10 +514,11 @@ function roomsAvailable(Event) {
 }
 
 function confirmRoomDate(Event) {
-  roomNum = JSON.parse(Event.target.value)
+  booking.roomNum = JSON.parse(Event.target.value)
   statMain.innerHTML = `
   <h1 id="stat-title" class="selected-date">You have chosen </h1>
-  <h2>Room #${roomNum} on ${currentMonth}/${currentDay}/${currentYear}</h2>
+  <h2>Room #${booking.roomNum} on 
+  ${booking.currentMonth}/${booking.currentDay}/${booking.currentYear}</h2>
   <button id="book-it" class="book-button">Yes! Book It.</button>
   <button id="change-date" class="book-button">Change Booking Date.</button>
   `
@@ -540,7 +532,8 @@ function confirmRoomDate(Event) {
 }
 
 function bookNewHotel() {
-  var currentDate = currentYear + '/' + currentMonth + '/' + currentDay
+  var currentDate = 
+  booking.currentYear + '/' + booking.currentMonth + '/' + booking.currentDay
   if (isAdmin === true) {
     currentUser = parseInt(userID)
   }
@@ -549,7 +542,7 @@ function bookNewHotel() {
     body: JSON.stringify({
       userID: currentUser,
       date: currentDate,
-      roomNumber: roomNum
+      roomNumber: booking.roomNum
     }),
     headers: {
       'Content-Type': 'application/json'
