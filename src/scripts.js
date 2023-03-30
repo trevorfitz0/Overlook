@@ -7,11 +7,11 @@ import Booking from './classes/booking.js'
 fetchData()
 
 function fetchData() {
-  const customers = fetch('http://localhost:3001/api/v1/customers')
+  const customers = fetch('https://overlook-api-jfogiato.vercel.app/api/v1/customers')
     .then((res) => res.json())
-  const rooms =  fetch('http://localhost:3001/api/v1/rooms')
+  const rooms =  fetch('https://overlook-api-jfogiato.vercel.app/api/v1/rooms')
     .then((res) => res.json())
-  const bookings = fetch('http://localhost:3001/api/v1/bookings')
+  const bookings = fetch('https://overlook-api-jfogiato.vercel.app/api/v1/bookings')
     .then((res) => res.json())
 
   Promise.all([customers, rooms, bookings])
@@ -55,9 +55,12 @@ if (month < 10) {
   month = `0${month}`
 }
 
+//The Daily Statistics page is set to the sample date because 
+//there is no data for todays date. 
 var todaysDate = year + '/' + month + '/' + day
+var sampleDate = '2022/04/22'
 
-
+  
 //Event Listeners and their variables
 
 const title = document.querySelector('#page-title')
@@ -282,7 +285,7 @@ function dailyStats() {
   bookHotelButton.style.display = 'none'
   dataArea.innerHTML = ""
   roomsBooked = hotelData.bookings
-    .filter(booking => booking.date === '2022/04/22')
+    .filter(booking => booking.date === sampleDate)
   let totalRevenue = roomsBooked.reduce((acc, room) => {
     acc += hotelData.rooms[room.roomNumber].costPerNight
     return acc
